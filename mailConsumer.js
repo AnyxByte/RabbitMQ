@@ -9,7 +9,7 @@ async function recieveMail() {
 
     channel.consume("mail_queue", (msg) => {
       if (msg !== null) {
-        console.log("Recieve msg: ", JSON.parse(msg.content));
+        console.log("Recieve msg from mail_queue: ", JSON.parse(msg.content));
         channel.ack(msg);
       }
     });

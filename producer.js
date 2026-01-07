@@ -6,7 +6,8 @@ async function sendMail() {
     const channel = await connection.createChannel();
 
     const exchange = "mail_exchange";
-    const routingKey = "send_mail";
+    const routingKeyForMail = "send_mail";
+    const routingKeyForUser = "send_user_details";
 
     const message = {
       to: "abc@gmail.com",
@@ -16,11 +17,18 @@ async function sendMail() {
     };
 
     await channel.assertExchange(exchange, "direct", { durable: false });
+
     await channel.assertQueue("mail_queue", { durable: false });
+    await channel.assertQueue("user_queue", { durable: false });
 
-    await channel.bindQueue("mail_queue", exchange, routingKey);
+    await channel.bindQueue("mail_queue", exchange, routingKeyForMail);
+    await channel.bindQueue("user_queue", exchange, routingKeyForUser);
 
-    channel.publish(exchange, routingKey, Buffer.from(JSON.stringify(message)));
+    channel.publish(
+      exchange,
+      routingKeyForUser,
+      Buffer.from(JSON.stringify(message))
+    );
 
     console.log("mail data was sent", message);
 
